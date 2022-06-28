@@ -105,6 +105,9 @@ function devcluster::install-nfs-class() {
 	oc scale deploy nfs-client-provisioner -n nfs --replicas 0
 	oc scale deploy nfs-client-provisioner -n nfs --replicas 1
 
+	echo "Edit the StorageProfile to have the right claimPropertySets"
+	oc patch StorageProfile nfs-client --type=json -p '[{ "op": "replace", "path": "/spec", "value": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"],"volumeMode": "Filesystem"}]}}]'
+
 }
 
 function devcluster::install-metallb() {
