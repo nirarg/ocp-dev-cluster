@@ -2,8 +2,6 @@
 
 set -e
 
-_action=$1
-shift
 
 export CLUSTER_NAME=${CLUSTER_NAME:-my-cluster}
 export BASE_DOMAIN=${BASE_DOMAIN:-example.com}
@@ -167,6 +165,26 @@ function devcluster::install-cnv() {
 	echo "Deploying the OpenShift Virtualization Operator..."
 	cat  manifests/cnv/hco.yaml | kubectl apply -f -
 }
+
+if (( "$#" < 1 )); then
+	echo "Error:
+	Unsupported command!!!
+	Parameters must be supported!!!
+	"
+        devcluster::usage
+	exit 1
+fi
+
+_action=$1
+shift
+
+if [[ ${_action} == "" ]]; then
+	echo "Error:
+	Unsupported command!!!
+	"
+        devcluster::usage
+	exit 1
+fi
 
 case ${_action} in
 "clean")
