@@ -28,12 +28,18 @@ Considering that this is a new install on a clean OS, the next tasks should be p
 
     Go to https://console-openshift-console.apps.ci.l2s4.p1.openshiftapps.com/, click on your name in the top
 right, copy the login command, extract the token from the command and
-use it to set `CI_TOKEN` in `config_$USER.sh`.
+use it to set `CI_TOKEN` environment variable.
+    ```bash
+    export CI_TOKEN=<extracted_value>
+    ```
 
 5. Export PULL_SECRET_PATH Environment Variable (absolute file path)
 
     Save the secret obtained from [cloud.openshift.com](https://cloud.redhat.com/openshift/install/pull-secret)
 and export the file path
+    ```bash
+    export PULL_SECRET_PATH=<pull_secret_file_path>
+    ```
 
 6. Clone ocp-dev-cluster repository and change directory to it
     ```bash
