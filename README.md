@@ -46,7 +46,7 @@ and export the file path
     git clone https://github.com/nirarg/ocp-dev-cluster.git
     ```
 
-7. In case you need, you can change any Environment Variable configured in `dev-cluster`
+7. In case you need, you can change any Environment Variable configured in [dev-cluster](dev-cluster)
 
 ### Usage
 

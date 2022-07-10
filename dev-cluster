@@ -3,11 +3,18 @@
 set -e
 
 
+# CLUSTER_NAME - Openshift Cluster Name
 export CLUSTER_NAME=${CLUSTER_NAME:-my-cluster}
+# BASE_DOMAIN - Base Domain name for the OCP cluster
 export BASE_DOMAIN=${BASE_DOMAIN:-example.com}
+# WORKER_MEMORY, WORKER_DISK, WORKER_VCPU - Change VM resources for workers.
 export WORKER_MEMORY=${WORKER_MEMORY:-32768}
+export WORKER_DISK=${WORKER_DISK:-60}
 export WORKER_VCPU=${WORKER_VCPU:-16}
+# HOST_IP_STACK - IP stack for the host.
+# Choices: "v4", "v6", "v4v6"
 export IP_STACK=${IP_STACK:-v4}
+# NUM_WORKERS - Indicate number of worker nodes to deploy.
 export NUM_WORKERS=${NUM_WORKERS:-3}
 export WORKING_DIR=${WORKING_DIR:-/home/dev-scripts}
 
