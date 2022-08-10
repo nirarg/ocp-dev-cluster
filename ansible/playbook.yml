@@ -1,0 +1,54 @@
+- name: Create an OCP cluster on the beaker machine
+  hosts: all
+  vars:
+    pull_secret_remote_path: "{{ansible_user_dir}}/pull_secret"
+    repo_local_dir: "{{ansible_user_dir}}/ansible/ocp-dev-cluster"
+    dev_cluster_command: "all"
+  gather_facts: true
+  become: true
+  tasks:
+  - name: Register the machine with RH
+    community.general.redhat_subscription:
+      state: present
+      username: "{{ rh_username }}"
+      password: "{{ rh_password }}"
+      auto_attach: true
+    retries: 3
+    delay: 5
+
+  - name: Upgrade all packages
+    package:
+      name: "*"
+      state: latest
+    register: result
+    retries: 5
+    until: result is success
+
+  - name: Install rpms
+    package:
+      name:
+      - git
+      - make
+      - wget
+      - jq
+      state: present
+
+  - name: Save pull secret file
+    ansible.builtin.copy:
+      src: "{{ pull_secret_file }}"
+      dest: "{{ pull_secret_remote_path }}"
+
+  - name: Get repo
+    ansible.builtin.git:
+      repo: "https://github.com/nirarg/ocp-dev-cluster.git"
+      dest: "{{ repo_local_dir }}"
+
+  - name: Run cluster creation
+    ansible.builtin.shell:
+      chdir: "{{ repo_local_dir }}"
+      cmd: "./dev-cluster {{ dev_cluster_command }}"
+    environment:
+      CI_TOKEN: "{{ ci_token }}"
+      PULL_SECRET_PATH: "{{ pull_secret_remote_path }}"
+    async: 10800
+    poll: 300
