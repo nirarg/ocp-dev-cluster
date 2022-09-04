@@ -20,8 +20,8 @@ export NFS_SERVER=192.168.122.1
 function devcluster::usage() {
 	echo "Usage:
 	
-	./dev-cluster <cammand>
-			
+	 Syntax: ./dev-cluster <COMMAND> [--use-ovn]
+		The supported COMMANDs:
 		create-cluster     ==> Create new OCP cluster
 		install-nfs-class  ==> Install NFS Storage Class on the cluster
 		install-metallb    ==> Install MetalLB (LoadBalancer) on the cluster
@@ -30,6 +30,9 @@ function devcluster::usage() {
 		all                ==> Create New OCP cluster and install NFS StorageClass, MetalLB and CNV on it
 		clean              ==> Delete the OCP cluster
 		help               ==> Print usage
+
+		The supported FLAGS:
+		--use-ovn            ==> Configure the network type to be \`OVNKubernetes\`
 	"
 }
 
@@ -165,6 +168,10 @@ function devcluster::install-cnv() {
 	cat  manifests/cnv/hco.yaml | kubectl apply -f -
 }
 
+function devcluster::export-ovn-as-network-type() {
+	export NETWORK_TYPE="OVNKubernetes"
+}
+
 if (( "$#" < 1 )); then
 	echo "Error:
 	Unsupported command!!!
@@ -183,6 +190,16 @@ if [[ ${_action} == "" ]]; then
 	"
         devcluster::usage
 	exit 1
+fi
+
+if (( "$#" == 2 )); then
+  _flag=$2
+  if [[ ${_flag} != "--use-ovn" ]]; then
+  	echo "Error:
+  	Unsupported flag!!!
+  	"
+  fi
+  devcluster::export-ovn-as-network-type
 fi
 
 case ${_action} in
