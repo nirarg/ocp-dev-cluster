@@ -50,5 +50,6 @@
     environment:
       CI_TOKEN: "{{ ci_token }}"
       PULL_SECRET_PATH: "{{ pull_secret_remote_path }}"
+      OCP_VERSION: "{{ ocp_version | default('') }}"
     async: 10800
     poll: 300

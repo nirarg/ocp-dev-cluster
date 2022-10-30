@@ -63,6 +63,11 @@ You can either use the provided `Ansible` playbook or run the steps manually
 
     The README uses a plain-text `values.yml` file. Consider using `ansible-vault` as the file includes sensitive information
 
+    4.1. You may optionally set the desired OCP version be setting
+    ```yaml
+    ocp_version: <Your desired OCP version>
+    ```
+
 5. Execute Ansible Playbook
 
     With Root Access
