@@ -138,6 +138,15 @@ clean              ==> Delete the OCP cluster
 help               ==> Print usage
 ```
 
+# Debugging your fork
+
+## Debugging Ansible
+To debug your fork, you may set the following in your `values.yaml` file to make the ansible playbook use your branch
+```yaml
+repo_to_clone: < The URL for your fork >
+version_to_clone: < Name of your branch >
+```
+
 ### More Info
 
 https://docs.google.com/document/d/1pxHJ4elXjRVgEZXK5U1kSmMQd21wMcXFO567ORzgCKY/edit?usp=sharing
