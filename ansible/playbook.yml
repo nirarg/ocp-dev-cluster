@@ -13,6 +13,7 @@
       username: "{{ rh_username }}"
       password: "{{ rh_password }}"
       auto_attach: true
+      force_register: true
     retries: 3
     delay: 5
 
