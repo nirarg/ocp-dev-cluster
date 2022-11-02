@@ -119,9 +119,15 @@ and export the file path
 6. Clone ocp-dev-cluster repository and change directory to it
     ```bash
     git clone https://github.com/nirarg/ocp-dev-cluster.git
+    cd ocp-dev-cluster
     ```
 
-7. In case you need, you can change any Environment Variable configured in `dev-cluster`
+7. If you wish to set the OCP version to a specific GA version, you may set the `OCP_VERSION` environment variable
+    ```bash
+    export OCP_VERSION=<Your desired OCP version>
+    ```
+
+8. In case you need, you can change any Environment Variable configured in `dev-cluster`
 
 # Usage
 
