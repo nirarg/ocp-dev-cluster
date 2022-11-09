@@ -19,9 +19,9 @@ export NFS_SERVER=192.168.122.1
 
 function devcluster::usage() {
 	echo "Usage:
-	
+
 	./dev-cluster <cammand>
-			
+
 		create-cluster     ==> Create new OCP cluster
 		install-nfs-class  ==> Install NFS Storage Class on the cluster
 		install-metallb    ==> Install MetalLB (LoadBalancer) on the cluster
@@ -34,14 +34,14 @@ function devcluster::usage() {
 }
 
 function devcluster::clean() {
-	if [ -d "dev-scripts" ] 
+	if [ -d "dev-scripts" ]
 	then
 		cd dev-scripts
 		make clean
 		cd ..
 		rm -rf dev-scripts
 	fi
-	if [ -d "${WORKING_DIR}" ] 
+	if [ -d "${WORKING_DIR}" ]
 	then
 		rm -rf ${WORKING_DIR}
 	fi
@@ -65,6 +65,10 @@ function devcluster::create-cluster() {
 	cd dev-scripts
 	cp config_example.sh config_${USER}.sh
 	sed -i 's/export CI_TOKEN=''/export CI_TOKEN='${CI_TOKEN}'/g' config_${USER}.sh
+	if [[ -n "${OCP_VERSION}" ]]; then
+		echo "export OPENSHIFT_RELEASE_TYPE=ga" >> config_${USER}.sh
+		echo "export OPENSHIFT_VERSION=${OCP_VERSION}" >> config_${USER}.sh
+	fi
 	make
 	cd ..
 
@@ -150,7 +154,7 @@ function devcluster::install-cnv() {
 	    fi
   	  fi
 	done
-	
+
 	if [[ $(oc get csv -n openshift-cnv ${CSV} -o jsonpath={.status.phase}) != "Succeeded" ]]; then
 	  echo "Error: Failed to deploy CNV"
 	  echo "CSV ${CSV} YAML"

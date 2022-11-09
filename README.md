@@ -63,6 +63,11 @@ You can either use the provided `Ansible` playbook or run the steps manually
 
     The README uses a plain-text `values.yml` file. Consider using `ansible-vault` as the file includes sensitive information
 
+    4.1. You may optionally set the desired OCP version be setting
+    ```yaml
+    ocp_version: <Your desired OCP version>
+    ```
+
 5. Execute Ansible Playbook
 
     With Root Access
@@ -114,9 +119,15 @@ and export the file path
 6. Clone ocp-dev-cluster repository and change directory to it
     ```bash
     git clone https://github.com/nirarg/ocp-dev-cluster.git
+    cd ocp-dev-cluster
     ```
 
-7. In case you need, you can change any Environment Variable configured in `dev-cluster`
+7. If you wish to set the OCP version to a specific GA version, you may set the `OCP_VERSION` environment variable
+    ```bash
+    export OCP_VERSION=<Your desired OCP version>
+    ```
+
+8. In case you need, you can change any Environment Variable configured in `dev-cluster`
 
 # Usage
 
@@ -131,6 +142,15 @@ install-cnv        ==> Install CNV (Openshift Virtualization) on the cluster
 all                ==> Create New OCP cluster and install NFS StorageClass, MetalLB and CNV on it
 clean              ==> Delete the OCP cluster
 help               ==> Print usage
+```
+
+# Debugging your fork
+
+## Debugging Ansible
+To debug your fork, you may set the following in your `values.yaml` file to make the ansible playbook use your branch
+```yaml
+repo_to_clone: < The URL for your fork >
+version_to_clone: < Name of your branch >
 ```
 
 ### More Info

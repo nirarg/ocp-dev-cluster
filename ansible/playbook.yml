@@ -4,6 +4,7 @@
     pull_secret_remote_path: "{{ansible_user_dir}}/pull_secret"
     repo_local_dir: "{{ansible_user_dir}}/ansible/ocp-dev-cluster"
     dev_cluster_command: "all"
+    this_repo: "https://github.com/nirarg/ocp-dev-cluster.git"
   gather_facts: true
   become: true
   tasks:
@@ -13,6 +14,7 @@
       username: "{{ rh_username }}"
       password: "{{ rh_password }}"
       auto_attach: true
+      force_register: true
     retries: 3
     delay: 5
 
@@ -40,8 +42,9 @@
 
   - name: Get repo
     ansible.builtin.git:
-      repo: "https://github.com/nirarg/ocp-dev-cluster.git"
+      repo: "{{repo_to_clone | default(this_repo)}}"
       dest: "{{ repo_local_dir }}"
+      version: "{{version_to_clone | default('HEAD')}}"
 
   - name: Run cluster creation
     ansible.builtin.shell:
@@ -50,5 +53,6 @@
     environment:
       CI_TOKEN: "{{ ci_token }}"
       PULL_SECRET_PATH: "{{ pull_secret_remote_path }}"
+      OCP_VERSION: "{{ ocp_version | default('') }}"
     async: 10800
     poll: 300
