@@ -82,12 +82,12 @@ You can either use the provided `Ansible` playbook or run the steps manually
 
     With Root Access
     ```bash
-    ansible-playbook -e @values.yml -i inventory.yml playbook.yml
+    ansible-playbook -e @values.yml playbook.yml
     ```
 
     Without Root Access
     ```bash
-    ansible-playbook -e @values.yml -i inventory.yml --ask-become-pass playbook.yml
+    ansible-playbook -e @values.yml --ask-become-pass playbook.yml
     ```
 
 6. You may find the kubeconfig file on the target machine at `~/ansible/ocp-dev-cluster/dev-scripts/ocp/my-cluster/auth/kubeconfig`
