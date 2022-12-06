@@ -64,9 +64,19 @@ You can either use the provided `Ansible` playbook or run the steps manually
     The README uses a plain-text `values.yml` file. Consider using `ansible-vault` as the file includes sensitive information
 
     4.1. You may optionally set the desired OCP version be setting
-    ```yaml
-    ocp_version: <Your desired OCP version>
-    ```
+    >```yaml
+    >ocp_version: <Your desired OCP version>
+    >```
+
+    4.2. You may optionally set environment variable you need to be used in the cluster creation
+
+    >for example:
+    >```yaml
+    >os_environment:
+    >  - key: NETWORK_TYPE
+    >    value: OVNKubernetes
+    >```
+    >For more environment variables options see [config_example in dev-scripts](https://github.com/openshift-metal3/dev-scripts/blob/master/config_example.sh)
 
 5. Execute Ansible Playbook
 

@@ -46,6 +46,15 @@
       dest: "{{ repo_local_dir }}"
       version: "{{version_to_clone | default('HEAD')}}"
 
+  - name: customize environment file
+    ansible.builtin.lineinfile:
+      dest: "{{ repo_local_dir }}/environment"
+      state: present
+      regexp: "^{{ item.key }}="
+      line: "export {{ item.key }}={{ item.value }}"
+    with_items: "{{ os_environment }}"
+    when: (os_environment is defined)
+
   - name: Run cluster creation
     ansible.builtin.shell:
       chdir: "{{ repo_local_dir }}"
