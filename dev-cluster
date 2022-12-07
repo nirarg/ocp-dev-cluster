@@ -2,20 +2,7 @@
 
 set -e
 
-
-export CLUSTER_NAME=${CLUSTER_NAME:-my-cluster}
-export BASE_DOMAIN=${BASE_DOMAIN:-example.com}
-export WORKER_MEMORY=${WORKER_MEMORY:-32768}
-export WORKER_VCPU=${WORKER_VCPU:-16}
-export IP_STACK=${IP_STACK:-v4}
-export NUM_WORKERS=${NUM_WORKERS:-3}
-export WORKING_DIR=${WORKING_DIR:-/home/dev-scripts}
-
-export KUBECONFIG=dev-scripts/ocp/${CLUSTER_NAME}/auth/kubeconfig
-
-export NFS_PATH=/home/nfshare
-export NFS_PROVISIONER_NAME=nfs-storage
-export NFS_SERVER=192.168.122.1
+source ./environment
 
 function devcluster::usage() {
 	echo "Usage:
