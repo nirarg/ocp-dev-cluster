@@ -41,6 +41,7 @@ You can either use the provided `Ansible` playbook or run the steps manually
           ansible_user: <Username to connect with>
           ansible_ssh_private_key_file: <Location of your Private SSH key>
           ansible_become: <Set to false if connecting as "root", otherwise remove>
+          ansible_python_interpreter: /usr/libexec/platform-python
     ```
     If you are running Ansible from the target machine
     ```yaml
