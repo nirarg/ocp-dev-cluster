@@ -41,6 +41,7 @@ You can either use the provided `Ansible` playbook or run the steps manually
           ansible_user: <Username to connect with>
           ansible_ssh_private_key_file: <Location of your Private SSH key>
           ansible_become: <Set to false if connecting as "root", otherwise remove>
+          ansible_python_interpreter: /usr/libexec/platform-python
     ```
     If you are running Ansible from the target machine
     ```yaml
@@ -64,20 +65,30 @@ You can either use the provided `Ansible` playbook or run the steps manually
     The README uses a plain-text `values.yml` file. Consider using `ansible-vault` as the file includes sensitive information
 
     4.1. You may optionally set the desired OCP version be setting
-    ```yaml
-    ocp_version: <Your desired OCP version>
-    ```
+    >```yaml
+    >ocp_version: <Your desired OCP version>
+    >```
+
+    4.2. You may optionally set environment variable you need to be used in the cluster creation
+
+    >for example:
+    >```yaml
+    >os_environment:
+    >  - key: NETWORK_TYPE
+    >    value: OVNKubernetes
+    >```
+    >For more environment variables options see [config_example in dev-scripts](https://github.com/openshift-metal3/dev-scripts/blob/master/config_example.sh)
 
 5. Execute Ansible Playbook
 
     With Root Access
     ```bash
-    ansible-playbook -e @values.yml -i inventory.yml playbook.yml
+    ansible-playbook -e @values.yml playbook.yml
     ```
 
     Without Root Access
     ```bash
-    ansible-playbook -e @values.yml -i inventory.yml --ask-become-pass playbook.yml
+    ansible-playbook -e @values.yml --ask-become-pass playbook.yml
     ```
 
 6. You may find the kubeconfig file on the target machine at `~/ansible/ocp-dev-cluster/dev-scripts/ocp/my-cluster/auth/kubeconfig`

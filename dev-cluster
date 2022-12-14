@@ -2,20 +2,7 @@
 
 set -e
 
-
-export CLUSTER_NAME=${CLUSTER_NAME:-my-cluster}
-export BASE_DOMAIN=${BASE_DOMAIN:-example.com}
-export WORKER_MEMORY=${WORKER_MEMORY:-32768}
-export WORKER_VCPU=${WORKER_VCPU:-16}
-export IP_STACK=${IP_STACK:-v4}
-export NUM_WORKERS=${NUM_WORKERS:-3}
-export WORKING_DIR=${WORKING_DIR:-/home/dev-scripts}
-
-export KUBECONFIG=dev-scripts/ocp/${CLUSTER_NAME}/auth/kubeconfig
-
-export NFS_PATH=/home/nfshare
-export NFS_PROVISIONER_NAME=nfs-storage
-export NFS_SERVER=192.168.122.1
+source ./environment
 
 function devcluster::usage() {
 	echo "Usage:
@@ -108,7 +95,6 @@ function devcluster::install-nfs-class() {
 	oc adm policy add-role-to-user use-scc-hostmount-anyuid -z nfs-client-provisioner --role-namespace nfs -n nfs
 	oc scale deploy nfs-client-provisioner -n nfs --replicas 0
 	oc scale deploy nfs-client-provisioner -n nfs --replicas 1
-
 }
 
 function devcluster::install-metallb() {
@@ -167,6 +153,25 @@ function devcluster::install-cnv() {
 
 	echo "Deploying the OpenShift Virtualization Operator..."
 	cat  manifests/cnv/hco.yaml | kubectl apply -f -
+
+	set +e
+	echo "Edit the StorageProfile to have the right claimPropertySets"
+	COUNTER=1
+	oc patch StorageProfile nfs-client --type=json -p '[{ "op": "replace", "path": "/spec", "value": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"],"volumeMode": "Filesystem"}]}}]'
+	while [ $? -ne 0 ] && [ $COUNTER -lt 20 ]
+	do
+	        echo Attemt to edit the StorageProfile failed $COUNTER times, wait 5 seconds and try again
+	        sleep 10
+	        let COUNTER=COUNTER+1
+		oc patch StorageProfile nfs-client --type=json -p '[{ "op": "replace", "path": "/spec", "value": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"],"volumeMode": "Filesystem"}]}}]'
+	done
+
+	result=$?
+	if [ $result -ne 0 ]
+	then
+	        exit $result
+	fi
+	set -e
 }
 
 if (( "$#" < 1 )); then

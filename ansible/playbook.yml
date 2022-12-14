@@ -1,12 +1,12 @@
 - name: Create an OCP cluster on the beaker machine
   hosts: all
   vars:
-    pull_secret_remote_path: "{{ansible_user_dir}}/pull_secret"
+    pull_secret_remote_path: "{{ansible_user_dir}}/ansible/pull_secret"
     repo_local_dir: "{{ansible_user_dir}}/ansible/ocp-dev-cluster"
-    dev_cluster_command: "all"
     this_repo: "https://github.com/nirarg/ocp-dev-cluster.git"
   gather_facts: true
   become: true
+
   tasks:
   - name: Register the machine with RH
     community.general.redhat_subscription:
@@ -35,10 +35,22 @@
       - jq
       state: present
 
-  - name: Save pull secret file
-    ansible.builtin.copy:
-      src: "{{ pull_secret_file }}"
-      dest: "{{ pull_secret_remote_path }}"
+  - name: Check if cluster exists
+    stat:
+      path: "{{ansible_user_dir}}/ansible"
+    register: ocp_cluster
+
+  - name: clean previouse ansible execution results
+    block:
+    - name: Clean OCP cluster if exists
+      ansible.builtin.shell:
+        chdir: "{{ repo_local_dir }}"
+        cmd: "./dev-cluster clean"
+    - name: Delete ansible directory if exists
+      file:
+        path: "{{ansible_user_dir}}/ansible"
+        state: absent
+    when: ocp_cluster.stat.exists
 
   - name: Get repo
     ansible.builtin.git:
@@ -46,13 +58,42 @@
       dest: "{{ repo_local_dir }}"
       version: "{{version_to_clone | default('HEAD')}}"
 
+  - name: Save pull secret file
+    ansible.builtin.copy:
+      src: "{{ pull_secret_file }}"
+      dest: "{{ pull_secret_remote_path }}"
+
+  - name: customize environment file
+    ansible.builtin.lineinfile:
+      dest: "{{ repo_local_dir }}/environment"
+      state: present
+      regexp: "^{{ item.key }}="
+      line: "export {{ item.key }}={{ item.value }}"
+    with_items: "{{ os_environment }}"
+    when: (os_environment is defined)
+
   - name: Run cluster creation
     ansible.builtin.shell:
       chdir: "{{ repo_local_dir }}"
-      cmd: "./dev-cluster {{ dev_cluster_command }}"
+      cmd: "./dev-cluster create-cluster"
     environment:
       CI_TOKEN: "{{ ci_token }}"
       PULL_SECRET_PATH: "{{ pull_secret_remote_path }}"
       OCP_VERSION: "{{ ocp_version | default('') }}"
     async: 10800
     poll: 300
+
+  - name: Install NFS StorageClass on the cluster
+    ansible.builtin.shell:
+      chdir: "{{ repo_local_dir }}"
+      cmd: "./dev-cluster install-nfs-class"
+
+  - name: Install MetalLB on the cluster
+    ansible.builtin.shell:
+      chdir: "{{ repo_local_dir }}"
+      cmd: "./dev-cluster install-metallb"
+
+  - name: Install CNV on the cluster
+    ansible.builtin.shell:
+      chdir: "{{ repo_local_dir }}"
+      cmd: "./dev-cluster install-cnv"
