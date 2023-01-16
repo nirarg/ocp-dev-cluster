@@ -76,6 +76,8 @@ You can either use the provided `Ansible` playbook or run the steps manually
     >os_environment:
     >  - key: NETWORK_TYPE
     >    value: OVNKubernetes
+    >  - key: SSH_PUB_KEY
+    >    value: "ssh-..."
     >```
     >For more environment variables options see [config_example in dev-scripts](https://github.com/openshift-metal3/dev-scripts/blob/master/config_example.sh)
 
