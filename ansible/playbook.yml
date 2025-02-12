@@ -88,10 +88,10 @@
       chdir: "{{ repo_local_dir }}"
       cmd: "./dev-cluster install-nfs-class"
 
-  - name: Install MetalLB on the cluster
-    ansible.builtin.shell:
-      chdir: "{{ repo_local_dir }}"
-      cmd: "./dev-cluster install-metallb"
+    #  - name: Install MetalLB on the cluster
+    #    ansible.builtin.shell:
+    #      chdir: "{{ repo_local_dir }}"
+    #      cmd: "./dev-cluster install-metallb"
 
   - name: Install CNV on the cluster
     ansible.builtin.shell:
