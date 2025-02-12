@@ -67,7 +67,7 @@
     ansible.builtin.lineinfile:
       dest: "{{ repo_local_dir }}/environment"
       state: present
-      regexp: "^{{ item.key }}="
+      regexp: "^export {{ item.key }}="
       line: "export {{ item.key }}={{ item.value }}"
     with_items: "{{ os_environment }}"
     when: (os_environment is defined)
