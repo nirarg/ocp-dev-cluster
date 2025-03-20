@@ -1,0 +1,62 @@
+- name: Find cluster name
+  ansible.builtin.set_fact:
+    cluster_name: "{{ (os_environment | selectattr('key', 'equalto', 'CLUSTER_NAME'))[0].value | default('my-cluster') }}"
+
+- name: Get Install State file
+  ansible.builtin.slurp:
+    src: "{{ repo_local_dir }}/dev-scripts/ocp/{{ cluster_name }}/.openshift_install_state.json"
+  register: install_state_file
+
+- name: Get Install Config from file
+  ansible.builtin.set_fact:
+    install_config: '{{ (install_state_file["content"] | b64decode | from_json)["*installconfig.InstallConfig"] }}'
+
+- name: Get IP Addresses
+  ansible.builtin.set_fact:
+    cluster_api_vip: '{{ install_config.config.platform.baremetal.apiVIPs[0] }}'
+    cluster_ingress_vip: '{{ install_config.config.platform.baremetal.ingressVIPs[0] }}'
+
+- name: Create HAProxy configuration file
+  ansible.builtin.template:
+    src: ./haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Allow HAProxy to listen on the required tcp ports
+  community.general.seport:
+    ports:
+      - 443
+      - 6443
+    proto: tcp
+    setype: http_port_t
+    state: present
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Open Ports in firewalld
+  block:
+    - name: Open external Ports
+      ansible.posix.firewalld:
+        zone: public
+        service: "{{ item }}"
+        permanent: true
+        state: enabled
+      loop:
+        - https
+        - kube-apiserver
+    - name: Reload firewalld
+      ansible.builtin.systemd_service:
+        name: firewalld
+        state: reloaded
+  when:
+    - services['firewalld.service'] is defined
+    - services['firewalld.service']['state'] == 'running'
+
+- name: Start and enable HAProxy
+  ansible.builtin.systemd_service:
+    name: haproxy
+    state: started
+    enabled: true

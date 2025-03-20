@@ -33,6 +33,7 @@
       - make
       - wget
       - jq
+      - haproxy
       state: present
 
   - name: Check if cluster exists
@@ -97,3 +98,7 @@
     ansible.builtin.shell:
       chdir: "{{ repo_local_dir }}"
       cmd: "./dev-cluster install-cnv"
+
+  - name: Configure HAProxy
+    ansible.builtin.include_tasks: install-haproxy.yml
+    when: configure_haproxy | default(false)
