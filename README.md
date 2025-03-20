@@ -65,21 +65,29 @@ You can either use the provided `Ansible` playbook or run the steps manually
     The README uses a plain-text `values.yml` file. Consider using `ansible-vault` as the file includes sensitive information
 
     4.1. You may optionally set the desired OCP version be setting
-    >```yaml
-    >ocp_version: <Your desired OCP version>
-    >```
+    ```yaml
+    ocp_version: <Your desired OCP version>
+    ```
+    See [here](#finding-supported-openshift-versions) for details
 
     4.2. You may optionally set environment variable you need to be used in the cluster creation
 
-    >for example:
-    >```yaml
-    >os_environment:
-    >  - key: NETWORK_TYPE
-    >    value: OVNKubernetes
-    >  - key: SSH_PUB_KEY
-    >    value: "ssh-..."
-    >```
-    >For more environment variables options see [config_example in dev-scripts](https://github.com/openshift-metal3/dev-scripts/blob/master/config_example.sh)
+    for example:
+    ```yaml
+    os_environment:
+      - key: NETWORK_TYPE
+        value: OVNKubernetes
+      - key: SSH_PUB_KEY
+        value: "ssh-..."
+    ```
+    For more environment variables options see [config_example in dev-scripts](https://github.com/openshift-metal3/dev-scripts/blob/master/config_example.sh)
+
+    4.3 The Ansible playbook also supports setting up HAProxy to allow direct access to the cluster from the bare metal machine.
+
+    To setup HAProxy set:
+    ```yaml
+    configure_haproxy: true
+    ```
 
 5. Execute Ansible Playbook
 
@@ -139,8 +147,13 @@ and export the file path
     ```bash
     export OCP_VERSION=<Your desired OCP version>
     ```
+    See [here](#finding-supported-openshift-versions) for details
 
 8. In case you need, you can change any Environment Variable configured in `dev-cluster`
+
+## Finding supported OpenShift versions
+
+Look [here](https://mirror.openshift.com/pub/openshift-v4/clients/ocp/) for the release versions
 
 # Usage
 
